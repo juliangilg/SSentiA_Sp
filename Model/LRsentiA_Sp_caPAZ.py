@@ -47,7 +47,7 @@ class LexicalAnalyzer(object):
         return X, Y
     
     
-    def write_CSV(self, X_data, Y_label, Y_prediction, confidence_scores ,category):
+    def write_CSV(self, X_data, Y_prediction, confidence_scores ,category):
 
         
         data= []
@@ -56,11 +56,11 @@ class LexicalAnalyzer(object):
         confidence = []
         for i in range(len(X_data)):
             data.append(X_data[i])
-            label.append(Y_label[i])
+            #label.append(Y_label[i])
             prediction.append( Y_prediction[i])
             confidence.append(confidence_scores[i])
         
-        dic = {'data': data, 'label': label, 'pred': prediction, 'confidence':confidence} 
+        dic = {'data': data, 'pred': prediction, 'confidence':confidence} 
         df = pd.DataFrame(dic)
         return df
 
@@ -202,7 +202,7 @@ class LexicalAnalyzer(object):
         return text
     
 
-    def classify_binary_dataset(self, X_data, Y_label):
+    def classify_binary_dataset(self, X_data):
         
         num_of_detection = 0
         true_prediction = 0
@@ -213,7 +213,7 @@ class LexicalAnalyzer(object):
         predictions = []
         i = 0
        
-        Y_label = Y_label.astype('int')
+        #Y_label = Y_label.astype('int')
         
        
         for user_review in X_data:
@@ -305,7 +305,7 @@ class LexicalAnalyzer(object):
 
        
             predicted_label = 0
-            true_label = int(Y_label[i])
+            #true_label = int(Y_label[i])
         
             if total_score >= 0:
                 predicted_label = 1 
@@ -323,25 +323,22 @@ class LexicalAnalyzer(object):
             prediction_confidence_scores.append(prediction_confidence_score)
             
            
-            if predicted_label == true_label:
-                true_prediction += 1
-            else:
-                false_prediction += 1
-                for aspect_sentence in sentiments:
-                    score = self.get_polarity_score(aspect_sentence)
+            self.get_polarity_score(aspect_sentence)
                     
             predictions.append(predicted_label)
                 
             
             i += 1
+            #if i%20 == 0:
+            #    print(i)
      
         # print("\n!!!!!!",len(Y_label), len(predictions))
         
         
         # print("Prediction ------")
-        performance = Performance() 
-        conf_matrix, f1_score, precision,  recall,acc = performance.get_results(Y_label, predictions)
-        print("----",round(f1_score,4), round(precision,4),  round(recall,4), round(acc,4) )
+        # performance = Performance() 
+        # conf_matrix, f1_score, precision,  recall,acc = performance.get_results(Y_label, predictions)
+        # print("----",round(f1_score,4), round(precision,4),  round(recall,4), round(acc,4) )
     
         # print(conf_matrix)
         
@@ -353,7 +350,7 @@ class LexicalAnalyzer(object):
     
           
     #----------Dataset----------
-    def distribute_predictions_into_bins(self, data, labels, predictions, confidence):
+    def distribute_predictions_into_bins(self, data, predictions, confidence):
         
         print("$$$$")        
         n_conf = np.array(confidence)
@@ -406,41 +403,41 @@ class LexicalAnalyzer(object):
             conf = confidence[i]
             if conf >= bin1:
                 very_high_data.append(data[i])
-                very_high_label.append(labels[i])
+                #very_high_label.append(labels[i])
                 very_high_prediction.append(predictions[i])
                 very_high_confidence.append(confidence[i])
                 
             elif conf >= bin2:  
                 high_data.append(data[i])
-                high_label.append(labels[i])
+                #high_label.append(labels[i])
                 high_prediction.append(predictions[i])
                 high_confidence.append(confidence[i])
                 
             elif conf >= bin3:
                 low_data.append(data[i])
-                low_label.append(labels[i])
+                #low_label.append(labels[i])
                 low_prediction.append(predictions[i])
                 low_confidence.append(confidence[i])
                 
             elif conf >= bin4:
                 very_low_data.append(data[i])
-                very_low_label.append(labels[i])
+                #very_low_label.append(labels[i])
                 very_low_prediction.append(predictions[i])
                 very_low_confidence.append(confidence[i])
                 
             else:
                 zero_data.append(data[i])
-                zero_label.append(labels[i])
+                #zero_label.append(labels[i])
                 zero_prediction.append(predictions[i])
                 zero_confidence.append(confidence[i])
                 
        
        
-        df1 = self.write_CSV(very_high_data, very_high_label, very_high_prediction,  very_high_confidence , "1")
-        df2 = self.write_CSV(high_data, high_label, high_prediction,  high_confidence , "2")
-        df3 = self.write_CSV(low_data, low_label, low_prediction,  low_confidence , "3")
-        df4 = self.write_CSV(very_low_data, very_low_label, very_low_prediction,  very_low_confidence , "4")
-        df5 = self.write_CSV(zero_data, zero_label, zero_prediction, zero_confidence , "5")
+        df1 = self.write_CSV(very_high_data, very_high_prediction,  very_high_confidence , "1")
+        df2 = self.write_CSV(high_data, high_prediction,  high_confidence , "2")
+        df3 = self.write_CSV(low_data, low_prediction,  low_confidence , "3")
+        df4 = self.write_CSV(very_low_data, very_low_prediction,  very_low_confidence , "4")
+        df5 = self.write_CSV(zero_data, zero_prediction, zero_confidence , "5")
         
         return df1, df2, df3, df4, df5
         
